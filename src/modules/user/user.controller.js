@@ -6,7 +6,7 @@ import fs from "fs/promises";
 import path from "path";
 import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
-  host: 'live.smtp.mailtrap.io',
+  host: 'sandbox.smtp.mailtrap.io',
   port: 587,
   auth: {
     user: 'api', // Replace with your Mailtrap username
@@ -26,23 +26,29 @@ const createUser = catchAsyncError(async (req, res, next) => {
       return next(new AppError("Phone number already exists", 409));
     }
   }
+  
+  // Handling file uploads
   req.body.CV_Arabic = req.files.CV_Arabic[0].filename;
   req.body.CV_English = req.files.CV_English[0].filename;
   req.body.profilePicture = req.files.profilePicture[0].filename;
   req.body.noObjection = req.files.noObjection[0].filename;
+  
+  // Creating the user and generating OTP
   let result = new userModel(req.body);
-  // console.log(result.otp)
-  result.otp= await sendOTP(req.body.email);
-  // console.log("result",await sendOTP(req.body.email))
-  // console.log(result.otp);
-  if(!result.otp ){
+  result.otp = await sendOTP(req.body.email);
+  
+  if (!result.otp) {
     return next(new AppError(`Can't create this User`, 404));
   }
-  // console.log(result);
+  
   await result.save();
   const token = await result.generateToken();
-  !result && next(new AppError(`Can't create this User`, 404));
-  result && res.json({ messaeg: "success", result, token });
+
+  // Remove OTP from the response object
+  result = result.toObject(); // Convert Mongoose document to plain JavaScript object
+  delete result.otp; // Remove the OTP key
+
+  result && res.json({ message: "success", result, token });
 });
 
 const resendOTP = catchAsyncError(async (req, res, next) => {
