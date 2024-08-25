@@ -6,11 +6,11 @@ import fs from "fs/promises";
 import path from "path";
 import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
-  host: 'sandbox.smtp.mailtrap.io',
+  host: 'live.smtp.mailtrap.io',
   port: 587,
   auth: {
     user: 'api', // Replace with your Mailtrap username
-    pass: 'af8b571eb6d44e13b7a92f3ec3762a61', // Replace with your Mailtrap password
+    pass: '18f43dadff6f3920df5ee95635aa691c', // Replace with your Mailtrap password
   },
 });
 
