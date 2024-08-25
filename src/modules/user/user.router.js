@@ -74,4 +74,10 @@ userRouter
  protectedRoutes(userModel),
  user.otpValidate
 )
+userRouter
+.route("/resendOTP")
+.get(
+ protectedRoutes(userModel),
+ user.resendOTP
+)
 export default userRouter;

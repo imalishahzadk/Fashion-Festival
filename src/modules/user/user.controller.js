@@ -13,6 +13,7 @@ const transporter = nodemailer.createTransport({
     pass: 'af8b571eb6d44e13b7a92f3ec3762a61', // Replace with your Mailtrap password
   },
 });
+
 const createUser = catchAsyncError(async (req, res, next) => {
   let user = await userModel.findOne({
     $or: [{ email: req.body.email }, { phone: req.body.phone }]
@@ -30,36 +31,48 @@ const createUser = catchAsyncError(async (req, res, next) => {
   req.body.profilePicture = req.files.profilePicture[0].filename;
   req.body.noObjection = req.files.noObjection[0].filename;
   let result = new userModel(req.body);
- 
-  result.otp= await sendOTP();
+  // console.log(result.otp)
+  result.otp= await sendOTP(req.body.email);
+  // console.log("result",await sendOTP(req.body.email))
+  // console.log(result.otp);
   if(!result.otp ){
     return next(new AppError(`Can't create this User`, 404));
   }
+  // console.log(result);
   await result.save();
   const token = await result.generateToken();
   !result && next(new AppError(`Can't create this User`, 404));
   result && res.json({ messaeg: "success", result, token });
 });
-
-const sendOTP = async () => {
+const resendOTP = catchAsyncError(async (req, res, next) => {
+  req.user.otp= await sendOTP(req.user.email);
+  if(!req.user.otp){
+    return next(new AppError(`Error while sending an OTP`, 404));
+  }
+  user = await userModel.findByIdAndUpdate(req.user.id, req.user, { new: true })
+  !result && next(new AppError(`Error while sending an OTP`, 404));
+  result && res.json({ messaeg: "success", result, token });
+});
+const sendOTP = async (mail) => {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  console.log("otp", otp);
+  // console.log("otp", otp);
 
   const mailOptions = {
     from: '"Mailtrap Test" <mailtrap@demomailtrap.com>',
-    to: 'hnysharma1195@gmail.com',
+    to: `${mail}`,
     subject: 'Your OTP Code',
     text: `Your OTP code is ${otp}`,
   };
-
   await transporter.sendMail(mailOptions).then((info) => {
-    console.log("sent")
-    return otp
+  console.log("sent",otp)
+  
   }).catch((er)=>{
-    return 0
-    console.log("error",er)});
+    console.log("error",er)
+    return 0;
+  });
+  console.log("sent",otp)
 
-
+    return otp;
 };
 
 const login = catchAsyncError(async (req, res, next) => {
@@ -255,5 +268,6 @@ export {
   deleteUser,
   createUser,
   login,
-  otpValidate
+  otpValidate,
+  resendOTP
 };

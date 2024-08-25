@@ -22,15 +22,14 @@ export const signIn = catchAsyncError(async (req, res, next) => {
 export const protectedRoutes = (model) => {
   return catchAsyncError(async (req, res, next) => {
     let { token } = req.headers;
-    // console.log("token",token)
     if (!token) return next(new AppError("token not provider", 401));
     let decoded = await jwt.verify(token, process.env.JWT_SECRET);
-    // console.log("decoded",decoded)
+    console.log("decoded",decoded)
     let user = await model.findById(decoded.id);
+    console.log("user ",user)
     if (!user) {
       return next(new AppError("user not found"));
     }
-    // console.log("user",user)
     req.user = user;
     next();
   });
