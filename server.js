@@ -24,6 +24,6 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ err: err.message, statusCode });
 });
 
-app.listen(3100, () => {
+app.listen(3101, () => {
   console.log("server is running");
 });
