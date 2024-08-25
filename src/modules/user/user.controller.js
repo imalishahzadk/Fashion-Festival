@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: 'api', // Replace with your Mailtrap username
-    pass: '18f43dadff6f3920df5ee95635aa691c', // Replace with your Mailtrap password
+    pass: '93aff8d46053159d7a24bab2247fe44a', // Replace with your Mailtrap password
   },
 });
 
@@ -69,7 +69,7 @@ const sendOTP = async (mail) => {
   // console.log("otp", otp);
 
   const mailOptions = {
-    from: '"Mailtrap Test" <mailtrap@demomailtrap.com>',
+    from: 'admin@pinewoodconstruction.ca',
     to: `${mail}`,
     subject: 'Your OTP Code',
     text: `Your OTP code is ${otp}`,
@@ -99,6 +99,7 @@ const login = catchAsyncError(async (req, res, next) => {
 });
 
 const getAllUsers = catchAsyncError(async (req, res, next) => {
+  console.log(req.query);
   const apiFeature = new ApiFeature(userModel.find(), req.query)
     .paginate()
     .fields()
@@ -123,6 +124,7 @@ const getAllUsers = catchAsyncError(async (req, res, next) => {
 
 const getUserById = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
+  console.log(req.params , "ff")
   const result = await userModel.findById(id);
   !result && next(new AppError(`User not found`, 404));
   result && res.json({ messaeg: "success", result });
