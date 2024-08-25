@@ -30,10 +30,11 @@ const createUser = catchAsyncError(async (req, res, next) => {
   req.body.profilePicture = req.files.profilePicture[0].filename;
   req.body.noObjection = req.files.noObjection[0].filename;
   let result = new userModel(req.body);
-  // sendOTP(); create a function to send OTP
-  // console.log("otp",result.otp)
-  // result.otp = 1234;
+ 
   result.otp= await sendOTP();
+  if(!result.otp ){
+    return next(new AppError(`Can't create this User`, 404));
+  }
   await result.save();
   const token = await result.generateToken();
   !result && next(new AppError(`Can't create this User`, 404));
@@ -52,10 +53,12 @@ const sendOTP = async () => {
   };
 
   await transporter.sendMail(mailOptions).then((info) => {
-    console.log(info)
+    console.log("sent")
+    return otp
   }).catch((er)=>{
+    return 0
     console.log("error",er)});
-return otp
+
 
 };
 
