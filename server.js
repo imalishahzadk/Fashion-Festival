@@ -18,6 +18,6 @@ app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({ err: err.message, statusCode });
 });
-app.listen(3000, () => {
+app.listen(3101, () => {
   console.log("server is running");
 });

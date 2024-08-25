@@ -10,7 +10,7 @@ const schema = new Schema({
   noObjection: { type: String, required: true },
   Committee: { type: String, required: true },
   position: { type: String, required: true },
-  identity: { type: Number, required: true },
+  identity: { type: String, required: true },
   additions: { type: String, required: true },
   nationality: { type: String, required: true },
   idNumber: { type: Number, required: true },
