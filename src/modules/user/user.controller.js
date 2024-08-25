@@ -2,7 +2,8 @@ import { catchAsyncError } from "../../../middleware/catchAsyncError.js";
 import { AppError } from "../../../utilits/AppError.js";
 import { ApiFeature } from "../../../utilits/AppFeature.js";
 import userModel from "../../../dataBase/models/user.model.js";
-import fs from "fs/promises";
+import * as fs from 'fs';
+
 import path from "path";
 import nodemailer from 'nodemailer';
 import { hash } from "bcrypt";
