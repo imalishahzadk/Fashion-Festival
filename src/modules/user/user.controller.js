@@ -5,6 +5,7 @@ import userModel from "../../../dataBase/models/user.model.js";
 import fs from "fs/promises";
 import path from "path";
 import nodemailer from 'nodemailer';
+import { hash } from "bcrypt";
 const transporter = nodemailer.createTransport({
   host: 'live.smtp.mailtrap.io',
   port: 587,
@@ -59,8 +60,8 @@ const resendOTP = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`Error while sending an OTP`, 404));
   }
   // console.log("step 3 ",req.user.id, req.user.otp)
-  const result=await userModel.findByIdAndUpdate(req.user.id, req.user.otp)
-  // console.log("step 4")
+  const result=await userModel.findByIdAndUpdate(req.user.id,   { otp: req.user.otp }, { new: true })
+
   !result && next(new AppError(`Error while sending an OTP`, 404));
   result && res.json({ messaeg: "success"});
 });
@@ -70,15 +71,20 @@ const forgetPassword = catchAsyncError(async (req, res, next) => {
   if(!req.user.otp){
     return next(new AppError(`Error while sending forget password request`, 404));
   }
-  console.log(req.user.id,req.user.otp)
-  const result=await userModel.findByIdAndUpdate(req.user.id, req.user.otp)
+  // console.log(req.user.id,req.user.otp)
+  const result=await userModel.findByIdAndUpdate(req.user.id,   { otp: req.user.otp }, { new: true })
+  // console.log(result.id,result.otp)
   !result && next(new AppError(`Error while sending forget password request`, 404));
   result && res.json({ messaeg: "OTP sent to your mail. Use that OTP to reset your password"});
 });
 
 const changePassword = catchAsyncError(async (req, res, next) => {
   const {otp,password,email}=req.body;
-  const result=await userModel.findByIdAndUpdate(req.user.id, password)
+  const user = await userModel.findById(req.user.id);
+  // console.log(user.otp)
+  if (user.otp != otp) return next(new AppError(`OTP incorrect. Please try again`, 404));
+  req.user.password=await hash(password, 10)
+  const result=await userModel.findByIdAndUpdate(req.user.id, req.user,{new:true})
   !result && next(new AppError(`Error while sending changing password request`, 404));
   result && res.json({ messaeg: "Password changed successfully"});
 });
