@@ -9,7 +9,7 @@ import {
   updateUserSchema
 } from "./user.validate.js";
 import { uploadMixfile } from "../../../middleware/fileUpload.js";
-import { allowedTo, protectedRoutes, protectedRoutesToDelete } from "../auth/auth.controller.js";
+import { allowedTo, protectedRoutes, protectedRoutesForOTP, protectedRoutesToDelete } from "../auth/auth.controller.js";
 import userModel from "../../../dataBase/models/user.model.js";
 import managerModel from "../../../dataBase/models/manager.model.js";
 const userRouter = Router();
@@ -71,13 +71,14 @@ userRouter
 userRouter
 .route("/otpValidate")
 .post(
- protectedRoutes(userModel),
+ protectedRoutesForOTP(userModel),
  user.otpValidate
 )
+
 userRouter
 .route("/resendOTP")
-.get(
- protectedRoutes(userModel),
+.post(
+  protectedRoutesForOTP(userModel),
  user.resendOTP
 )
 export default userRouter;

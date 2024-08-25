@@ -44,14 +44,19 @@ const createUser = catchAsyncError(async (req, res, next) => {
   !result && next(new AppError(`Can't create this User`, 404));
   result && res.json({ messaeg: "success", result, token });
 });
+
 const resendOTP = catchAsyncError(async (req, res, next) => {
+  // console.log("step 1")
   req.user.otp= await sendOTP(req.user.email);
+  // console.log("step 2")
   if(!req.user.otp){
     return next(new AppError(`Error while sending an OTP`, 404));
   }
-  user = await userModel.findByIdAndUpdate(req.user.id, req.user, { new: true })
+  // console.log("step 3 ",req.user.id, req.user.otp)
+  const result=await userModel.findByIdAndUpdate(req.user.id, req.user.otp)
+  // console.log("step 4")
   !result && next(new AppError(`Error while sending an OTP`, 404));
-  result && res.json({ messaeg: "success", result, token });
+  result && res.json({ messaeg: "success"});
 });
 const sendOTP = async (mail) => {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
