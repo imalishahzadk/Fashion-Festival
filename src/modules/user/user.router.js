@@ -81,4 +81,16 @@ userRouter
   protectedRoutesForOTP(userModel),
  user.resendOTP
 )
+userRouter
+.route("/forgetPassword")
+.post(
+  protectedRoutesForOTP(userModel),//use same route as OTP
+ user.forgetPassword
+)
+userRouter
+.route("/changePassword")
+.post(
+  protectedRoutesForOTP(userModel),//use same route as OTP
+ user.changePassword
+)
 export default userRouter;

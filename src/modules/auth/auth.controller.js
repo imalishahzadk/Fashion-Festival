@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { catchAsyncError } from "../../../middleware/catchAsyncError.js";
 import { AppError } from "../../../utilits/AppError.js";
 import dotenv from "dotenv";
+import { resendOTP } from "../user/user.controller.js";
 dotenv.config();
 export const signIn = catchAsyncError(async (req, res, next) => {
   let { email, password } = req.body;
@@ -52,12 +53,11 @@ export const protectedRoutesToDelete = (model) => {
     next();
   });
 };
-
+// email,check we sent an OTP for resendOTP
 export const protectedRoutesForOTP = (model) => {
   return catchAsyncError(async (req, res, next) => {
     const email=req.body.email;
     let user = await model.findOne({ email });
-    console.log("user ",user)
     if (!user) {
       return next(new AppError("user not found"));
     }

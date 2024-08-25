@@ -64,12 +64,31 @@ const resendOTP = catchAsyncError(async (req, res, next) => {
   !result && next(new AppError(`Error while sending an OTP`, 404));
   result && res.json({ messaeg: "success"});
 });
+
+const forgetPassword = catchAsyncError(async (req, res, next) => {
+  req.user.otp= await sendOTP(req.user.email);
+  if(!req.user.otp){
+    return next(new AppError(`Error while sending forget password request`, 404));
+  }
+  console.log(req.user.id,req.user.otp)
+  const result=await userModel.findByIdAndUpdate(req.user.id, req.user.otp)
+  !result && next(new AppError(`Error while sending forget password request`, 404));
+  result && res.json({ messaeg: "OTP sent to your mail. Use that OTP to reset your password"});
+});
+
+const changePassword = catchAsyncError(async (req, res, next) => {
+  const {otp,password,email}=req.body;
+  const result=await userModel.findByIdAndUpdate(req.user.id, password)
+  !result && next(new AppError(`Error while sending changing password request`, 404));
+  result && res.json({ messaeg: "Password changed successfully"});
+});
+
 const sendOTP = async (mail) => {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
   // console.log("otp", otp);
 
   const mailOptions = {
-    from: '"Mailtrap Test" <mailtrap@demomailtrap.com>',
+    from: 'admin@pinewoodconstruction.ca',
     to: `${mail}`,
     subject: 'Your OTP Code',
     text: `Your OTP code is ${otp}`,
@@ -280,5 +299,7 @@ export {
   createUser,
   login,
   otpValidate,
-  resendOTP
+  resendOTP,
+  changePassword,
+  forgetPassword
 };
