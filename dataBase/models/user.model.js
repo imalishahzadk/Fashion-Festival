@@ -17,7 +17,7 @@ const schema = new Schema({
   birthDate: { type: String, required: true },
   countryKey: { type: String, required: true },
   phone: { type: Number, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   countryOfResidence: { type: String, required: true },
   cityOfResidence: { type: String, required: true },
@@ -30,8 +30,8 @@ const schema = new Schema({
   licenseNumber: { type: String, required: true },
   licensSource: { type: String, required: true },
   agreementAndPrivacy: { type: Boolean, default: false },
-  otp: { type: Number},
-  verified: { type: Boolean, default: false }
+  otp: { type: Number },
+  verified: { type: Boolean, default: false },
 });
 
 schema.pre("save", async function (next) {
