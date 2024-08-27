@@ -1,9 +1,12 @@
+// server.js
+
 import Express from "express";
 import dbConnection from "./dataBase/dbConnection.js";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import cors from "cors"; // Import cors
+import cors from "cors";
 import { init } from "./src/modules/index.routes.js";
+
 dotenv.config();
 
 const app = Express();
@@ -24,6 +27,6 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ err: err.message, statusCode });
 });
 
-app.listen(3101, () => {
-  console.log("server is running", 3101);
+app.listen(3103, () => {
+  console.log("Server is running on port", 3103);
 });
